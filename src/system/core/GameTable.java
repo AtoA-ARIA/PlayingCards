@@ -1,21 +1,22 @@
 package system.core;
 
-import java.util.Scanner;
+import system.front.ScannerForMultiThreadOnCUI;
 
 /**
  * ゲームを管理する抽象クラス。すべてのゲームはこのクラスを継承する。
  * @author Takashi Sakakihara
  *
  */
-public abstract class GameTable implements VisualizerOnCUI, Runnable {
+public abstract class GameTable extends Thread implements VisualizerOnCUI {
 	/**
 	 * CUIでゲームをするときに使用する標準入力のスキャナ。
+	 * マルチスレッド用に作ったクラス。
 	 */
-	protected Scanner scanCUI;
+	protected ScannerForMultiThreadOnCUI scanCUI;
 	/**
 	 * ゲームで使用する山札。
 	 */
-	protected CardDeck deck;
+	protected CardDeck gameDeck;
 	/**
 	 * ゲームの参加人数。
 	 */
@@ -34,8 +35,8 @@ public abstract class GameTable implements VisualizerOnCUI, Runnable {
 	 * 外からScannerを共有しておく。
 	 * @param scan 標準入力のスキャナ。
 	 */
-	public GameTable(Scanner scan) {
-		this.scanCUI = scan;
+	public GameTable(ScannerForMultiThreadOnCUI scanCUI) {
+		this.scanCUI = scanCUI;
 	}
 
 	/**
@@ -43,19 +44,14 @@ public abstract class GameTable implements VisualizerOnCUI, Runnable {
 	 */
 	public abstract void settingTable();
 	/**
-	 * ゲームを開始する。
-	 */
-	public abstract void start();
-	/**
 	 * ファイルにゲームをセーブする。
 	 */
 	public abstract void saveGame();
 	/**
-	 * スキャナからゲームのデータをロードする。
-	 * このスキャナはファイルからの入力で初期化されていることを想定している。
+	 * ゲームのデータをロードする。
 	 * @param scan
 	 */
-	public abstract void loadGame(Scanner scan);
+	public abstract void loadGame(String fileName);
 
 	/**
 	 * ゲームのルールをCUIに表示する。

@@ -33,6 +33,7 @@ public class CardDeck implements VisualizerOnCUI {
 	 * @param numberOfCardDeck トランプのデッキ数
 	 */
 	public CardDeck(int numberOfCardDeck) {
+		cards = new ArrayList<Card>();
 		for(int i = 0; i < numberOfCardDeck; i++) {
 			for(int j = 1; j < 14; j++) {
 				for(int k = 0; k < 4; k++) {
@@ -94,6 +95,22 @@ public class CardDeck implements VisualizerOnCUI {
 			drawCards.add(cards.remove(0));
 		}
 		return drawCards;
+	}
+
+	public Card drawCard() {
+		return cards.remove(0);
+	}
+
+	public int getInitialDeckSize() {
+		return this.initialDeckSize;
+	}
+
+	public int getCurrentDeckSize() {
+		return this.cards.size();
+	}
+
+	public double getRemainingRate() {
+		return (((double) cards.size() / (double) initialDeckSize));
 	}
 
 	@Override

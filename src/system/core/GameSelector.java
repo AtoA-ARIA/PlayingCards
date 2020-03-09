@@ -1,9 +1,9 @@
 package system.core;
 
 import java.util.InputMismatchException;
-import java.util.Scanner;
 
 import blackJack.BlackJackTable;
+import system.front.ScannerForMultiThreadOnCUI;
 
 /**
  * ゲームを選ぶクラス。
@@ -38,7 +38,7 @@ public class GameSelector {
 	 * @param scan main メソッドで作った System.in で初期化した Scanner のインスタンス。
 	 * @return 選ばれたゲームの GameTable のインスタンス。
 	 */
-	public static GameTable selectTableOnCUI(Scanner scan) {
+	public static GameTable selectTableOnCUI(ScannerForMultiThreadOnCUI scan) {
 		int gameNumber = 0;
 		while(true) {
 			selectMessageOnCUI();
