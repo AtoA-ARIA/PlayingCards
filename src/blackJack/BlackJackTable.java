@@ -7,30 +7,110 @@ import system.core.CardDeck;
 import system.core.GameTable;
 import system.front.ScannerForMultiThreadOnCUI;
 
+/**
+ * ブラックジャックのゲームを司るクラス。
+ * ゲームの情報すべてを保持し、プレイヤーの行動の実際の処理の部分も行う。
+ * @author Takashi Sakakihara
+ *
+ */
 public class BlackJackTable extends GameTable {
+	/**
+	 * 入出力のモード。現状コンソールの標準入出力のみなので、特に使用せず。
+	 */
 	private int ioMode;
+	/**
+	 * ゲーム番号。賭けが終わって次のゲームが始まるタイミングで1増える。
+	 */
 	private int gameNumber;
+	/**
+	 * デッキ数。トランプのデッキをいくつ使ってゲームをするかを表す。
+	 */
 	private int numberOfDecks;
+	/**
+	 * 初期チップ。最初にプレイヤーがどれだけのチップを持っているかを表す。
+	 */
 	private int initialPlayerChips;
+	/**
+	 * 最小賭金。すべてのプレイヤーはこの値以上の賭金で勝負しなければならない。
+	 */
 	private int minimumBet;
+	/**
+	 * ゲームの進行度。ゲームの処理がどの段階かを表す。
+	 * 1 : プレイヤーの賭金の決定処理。
+	 * 2 : 全員にカードを配る処理。
+	 * 3 : インシュランスの決定処理。ディーラーのオープンカードがAではないときはスキップされる。
+	 * 4 : ディーラーのブラックジャックの確認処理。ディーラーのオープンカードがAまたは10点のカードではないときスキップされる。
+	 * 5 : プレイヤーの行動処理。
+	 * 6 : ディーラーの行動処理。
+	 * 7 : 勝敗処理。
+	 * 8 : 次のゲームの確認処理。
+	 */
 	private int stage;
+	/**
+	 * 次のゲームがあるかどうか。
+	 */
 	private boolean hasNextGame;
-	private ArrayList<Integer> allPlayersChips;
+	/**
+	 * プレイヤーに共有するゲームの基本情報オブジェクト。
+	 */
 	private CommonInformation commonInformation;
 
+	/**
+	 * プレイヤーの実体。
+	 */
 	private ArrayList<BlackJackPlayer> players;
+	/**
+	 * プレイヤーの名前。
+	 */
 	private ArrayList<String> playerNames;
+	/**
+	 * 全プレイヤーの現在のチップ。
+	 */
+	private ArrayList<Integer> allPlayersChips;
+	/**
+	 * ディーラーの公開カード。ディーラーが引く
+	 */
 	private ArrayList<Card> dealersOpenCards;
+	/**
+	 * ディーラーの伏せカード。
+	 */
 	private Card dealersHiddenCard;
+	/**
+	 * 全プレイヤーの全手札。
+	 * ArrayList<Card> は手札1つを表す。ディーラーの手と勝負する単位。
+	 * ArrayList<ArrayList<Card>> はあるプレイヤーの持つそれぞれの手札を表す。スプリットをしたときのみ2つ以上の要素を持つ。
+	 * ArrayList<ArrayList<ArrayList<Card>>> はつまりすべてのプレイヤーそれぞれの、全ての手札となる。
+	 */
 	private ArrayList<ArrayList<ArrayList<Card>>> allPlayersHands;
+	/**
+	 * 全てのプレイヤーの現在のゲームでの賭金。
+	 */
 	private ArrayList<Integer> allPlayersBets;
+	/**
+	 * 全てのプレイヤーの現在のゲームでのインシュランス。
+	 */
 	private ArrayList<Integer> allPlayersInsurance;
+	/**
+	 * プレイヤーの手札の状態。
+	 * スプリットで手札が増えた場合、それぞれの手札がステータスを持つ。
+	 */
 	private ArrayList<ArrayList<String>> allPlayersStatus;
 
+	/**
+	 * 行動決定の待ち時間。（ミリ秒）
+	 * プレイヤーから間違ったメッセージを受け取ったときなどに次のメッセージ受け取りまでシステムが待つ時間。
+	 */
 	public static final int waitingTime = 1000;
+	/**
+	 * 間違ったメッセージを受け付ける回数。
+	 * この回数間違ったメッセージをプレイヤーから受け取ると、そのプレイヤーは強制的にパスになる。
+	 */
 	public static final int numberOfTimesToAcceptWrongMessage = 5;
 
-
+	/**
+	 * コンストラクタ。マルチスレッド用スキャナーを受け取る。
+	 * @param scanCUI
+	 */
 	public BlackJackTable(ScannerForMultiThreadOnCUI scanCUI) {
 		super(scanCUI);
 		ioMode = 0;
@@ -80,15 +160,23 @@ public class BlackJackTable extends GameTable {
 		}
 	}
 
+	/**
+	 * ゲームの基本設定をCUIで行う。
+	 * ここではゲームで使用するトランプデッキ数、プレイヤーの初期チップ量、ゲームの最低賭金
+	 */
 	private void setGameRulesOnCUI() {
 		System.out.println("ブラックジャックに使うトランプのデッキ数を1～8で入力してください。");
 		this.numberOfDecks = scanCUI.scanInt("デッキ数", 1, 8);
 		System.out.println("プレイヤーの初期チップの量を100～10000で入力してください。");
 		this.initialPlayerChips = scanCUI.scanInt("初期チップ", 100, 10000);
-		System.out.println("プレイヤーの最低賭金を1～100で入力してください。");
+		System.out.println("このテーブルの最低賭金を1～100で入力してください。");
 		this.minimumBet = scanCUI.scanInt("最低賭金", 1, 100);
 	}
 
+	/**
+	 * プレイヤーの初期設定をCUIで行う。
+	 * まず参加人数を決定し、その後参加人数分のプレイヤー初期設定をする。
+	 */
 	private void setPlayersOnCUI() {
 		System.out.println("ブラックジャックの参加人数は何人ですか？1～7人で入力してください。");
 		this.numberOfPlayers = scanCUI.scanInt("参加人数", 1, 7);
@@ -102,6 +190,11 @@ public class BlackJackTable extends GameTable {
 		}
 	}
 
+	/**
+	 * プレイヤーのオブジェクトをゲームに追加する。
+	 * ここの入力で決定したPlayerTypeによって、生成されるプレイヤーの意思決定処理がCUIの入力になったり、AIになったりする。
+	 * @param playerNumber プレイヤーの通し番号
+	 */
 	private void addPlayerOnCUI(int playerNumber) {
 		String playerName = "";
 		while(playerName != null && playerName.contentEquals("")) {
@@ -127,6 +220,9 @@ public class BlackJackTable extends GameTable {
 		System.out.println();
 	}
 
+	/**
+	 * ゲームの初期化。毎ゲーム呼び出す。
+	 */
 	private void gameInitialize() {
 		gameNumber++;
 		stage = 0;
@@ -184,6 +280,10 @@ public class BlackJackTable extends GameTable {
 		System.out.println(rulesString);
 	}
 
+	/**
+	 * Thread クラスの run のオーバーライド。
+	 * 次のゲームがある限りゲームの処理を続ける。
+	 */
 	@Override
 	public void run() {
 		// TODO 自動生成されたメソッド・スタブ
@@ -200,6 +300,10 @@ public class BlackJackTable extends GameTable {
 		}
 	}
 
+	/**
+	 * ゲームの進行度を進める。
+	 * また、全てのプレイヤーに進行度を通知する。
+	 */
 	private void advanceStage() {
 		this.stage++;
 		if(isValidStage()) {
@@ -214,6 +318,10 @@ public class BlackJackTable extends GameTable {
 		}
 	}
 
+	/**
+	 * 現在の進行度の処理が必要かどうかを判別する。
+	 * @return stage の処理が必要ならtrue、必要ないならfalse
+	 */
 	private boolean isValidStage() {
 		if(stage < 9) {
 			if(stage == 2) {
@@ -243,6 +351,9 @@ public class BlackJackTable extends GameTable {
 		return false;
 	}
 
+	/**
+	 * 進行度に応じたゲームの処理のメソッドを呼び出す。
+	 */
 	private void callGameProgressMethod() {
 		// System.out.println("STAGE" + stage);
 		switch(stage) {
@@ -278,6 +389,11 @@ public class BlackJackTable extends GameTable {
 		System.out.println();
 	}
 
+	/**
+	 * プレイヤーの賭金の設定処理。
+	 * まず、それぞれのプレイヤーから賭金をメッセージとして受け取る。
+	 * 受け取ったメッセージをもとに賭金の情報を設定し、その分チップから引く。
+	 */
 	private void makePlayersToBet() {
 		for(BlackJackPlayer player : players) {
 			String currentPlayersInformation = player.getName() + "(" + player.getPlayerNumber() + ")";
@@ -332,6 +448,11 @@ public class BlackJackTable extends GameTable {
 		}
 	}
 
+	/**
+	 * プレイヤーの初期手札を配る処理。
+	 * プレイヤーの状態がBET（つまり賭金をかけた）ならば配る。そうでないならば配らない。
+	 * その後、ディーラーのオープンカード及び伏せカードも配る。
+	 */
 	private void dealFirstHandCards() {
 		for(BlackJackPlayer player : players) {
 			if(allPlayersStatus.get(player.getPlayerNumber()).get(0).contentEquals("BET")) {
@@ -347,6 +468,10 @@ public class BlackJackTable extends GameTable {
 		System.out.println();
 	}
 
+	/**
+	 * インシュランスの処理。
+	 * それぞれのプレイヤーからメッセージを受け取り、適正な値であればインシュランスを設定し、その分チップから引く。
+	 */
 	private void makePlayersToInsure() {
 		for(BlackJackPlayer player : players) {
 			if(allPlayersStatus.get(player.getPlayerNumber()).get(0).contentEquals("DEALED")) {
@@ -397,6 +522,11 @@ public class BlackJackTable extends GameTable {
 		}
 	}
 
+	/**
+	 * ディーラーのブラックジャックの確認処理。
+	 * ディーラーがブラックジャックだった場合、インシュランスの払い戻しの処理を行う。
+	 * その後 stage が 6 になり、プレイヤーの行動処理はスキップされる。
+	 */
 	private void checkDealersBlackJack() {
 		System.out.println("ディーラーのブラックジャックを確認します。");
 		ArrayList<Card> dealersHand = new ArrayList<Card>(dealersOpenCards);
@@ -421,6 +551,12 @@ public class BlackJackTable extends GameTable {
 		}
 	}
 
+	/**
+	 * プレイヤーの行動処理。
+	 * プレイヤーのそれぞれの手札に対してそれぞれメッセージを受け取る。
+	 * その後、メッセージの内容に応じて処理するメソッドを呼び出す。
+	 * これらのメソッドは実行可能かどうかを返すので、実行できなかった場合はまたメッセージを受け取る。(numberOfTimesToAcceptWrongMessage)
+	 */
 	public void processPlayersAction() {
 		for(BlackJackPlayer player : players) {
 			if(!allPlayersStatus.get(player.getPlayerNumber()).get(0).contentEquals("PASS")) {
@@ -459,6 +595,9 @@ public class BlackJackTable extends GameTable {
 								System.out.println("最初にしかサレンダーはできません！");
 								isCorrectInput = false;
 							}
+						default:
+							isCorrectInput = false;
+							break;
 						}
 						if(isCorrectInput) break;
 						try {
@@ -485,6 +624,16 @@ public class BlackJackTable extends GameTable {
 		}
 	}
 
+	/**
+	 * プレイヤーのヒット処理。
+	 * プレイヤーの handNumber 番目の手札（スプリットした場合のみ増える）に一枚追加する。
+	 * 正常に行われた場合、playerStatus が変化する。
+	 * バーストした場合は BURST に、そうでない場合は HIT になる。
+	 * エースのスプリットをしたあとのヒットをした場合のみ playerStatus は STAND になる。
+	 * @param player 処理を行うプレイヤー
+	 * @param handNumber 手札の番号
+	 * @return
+	 */
 	private boolean processPlayersHit(BlackJackPlayer player, int handNumber) {
 		String currentPlayersInformation = player.getName() + "(" + player.getPlayerNumber() + ")";
 		if(allPlayersHands.get(player.getPlayerNumber()).size() > 1) {
@@ -511,6 +660,13 @@ public class BlackJackTable extends GameTable {
 		return true;
 	}
 
+	/**
+	 * プレイヤーのスタンド処理。
+	 * 正常に行われた場合、playerStatus が STAND になる。
+	 * @param player 処理を行うプレイヤー
+	 * @param handNumber 手札の番号
+	 * @return
+	 */
 	private boolean processPlayersStand(BlackJackPlayer player, int handNumber) {
 		String currentPlayersInformation = player.getName() + "(" + player.getPlayerNumber() + ")";
 		if(allPlayersHands.get(player.getPlayerNumber()).size() > 1) {
@@ -521,6 +677,15 @@ public class BlackJackTable extends GameTable {
 		return true;
 	}
 
+	/**
+	 * プレイヤーのダブルダウン処理。
+	 * プレイヤーのチップが賭金以上のときのみ動作。
+	 * 賭金を倍にし、増加分だけチップを減らす。
+	 * さらに、バーストした場合は playerStatus が BURST になり、そうでない場合は STAND になる。
+	 * @param player 処理を行うプレイヤー
+	 * @param handNumber 手札の番号
+	 * @return
+	 */
 	private boolean processPlayersDoubleDown(BlackJackPlayer player, int handNumber) {
 		String currentPlayersInformation = player.getName() + "(" + player.getPlayerNumber() + ")";
 		if(handNumber == 0 && allPlayersHands.get(player.getPlayerNumber()).size() == 2) {
@@ -552,6 +717,16 @@ public class BlackJackTable extends GameTable {
 		return true;
 	}
 
+	/**
+	 * プレイヤーのスプリット処理。
+	 * プレイヤーの最初のアクションで、チップが賭金以上であり、かつ手札が同じ点数のカードの場合のみ動作。
+	 * 手札を一つ追加し、現在の手札から一枚をそちらに移動させる。
+	 * さらにチップからプレイヤーの賭金分を引く。
+	 * その後、playerStatus を SPLIT にする。
+	 * @param player 処理を行うプレイヤー
+	 * @param handNumber 手札の番号
+	 * @return
+	 */
 	private boolean processPlayersSplit(BlackJackPlayer player, int handNumber) {
 		String currentPlayersInformation = player.getName() + "(" + player.getPlayerNumber() + ")";
 		ArrayList<Card> playersHand1 = allPlayersHands.get(player.getPlayerNumber()).get(handNumber);
@@ -582,12 +757,33 @@ public class BlackJackTable extends GameTable {
 		return true;
 	}
 
-	private void processPlayersSurrender(BlackJackPlayer player, int handNumber) {
+	/**
+	 * プレイヤーのサレンダー処理。
+	 * プレイヤーの最初のアクションの場合のみ動作する。
+	 * 賭金の半分をプレイヤーのチップに返却し、playerStatus を SURRENDER にする。
+	 * @param player 処理を行うプレイヤー
+	 * @param handNumber 手札の番号
+	 */
+	private boolean processPlayersSurrender(BlackJackPlayer player, int handNumber) {
 		String currentPlayersInformation = player.getName() + "(" + player.getPlayerNumber() + ")";
-		System.out.println(currentPlayersInformation + "はサレンダーしました。");
-		allPlayersStatus.get(player.getPlayerNumber()).set(handNumber, "SURRENDER");
+		if(handNumber == 0 && allPlayersHands.get(player.getPlayerNumber()).get(0).size() == 2) {
+			int back = allPlayersBets.get(player.getPlayerNumber()) / 2;
+			int chip = allPlayersChips.get(player.getPlayerNumber()) + back;
+			allPlayersChips.set(player.getPlayerNumber(), chip);
+			System.out.println(currentPlayersInformation + "はサレンダーしました。\n"
+					+ currentPlayersInformation + "に" + back + "が返却されました。");
+			allPlayersStatus.get(player.getPlayerNumber()).set(handNumber, "SURRENDER");
+		} else {
+			System.out.println("最初にしかサレンダーはできません！");
+			return false;
+		}
+		return true;
 	}
 
+	/**
+	 * ディーラーのアクションの処理。
+	 * ディーラーの伏せカードを公開カードに追加し、その後合計が17以上になるかバーストするまでカードをデッキから引く。
+	 */
 	private void processDealersAction() {
 		dealersOpenCards.add(dealersHiddenCard);
 		System.out.println("ディーラーの手は");
@@ -611,10 +807,19 @@ public class BlackJackTable extends GameTable {
 		System.out.println();
 	}
 
+	/**
+	 * 勝敗処理。
+	 * パスまたはサレンダーではないプレイヤーの手札に対してそれぞれディーラーの手の強さと比較する。
+	 * プレイヤーの方が低い場合は、プレイヤーの敗北となる。この場合は特になにもしない。
+	 * プレイヤーとディーラーが同じ場合は引き分けとなり、賭金が返却される。
+	 * プレイヤーの方が高い場合は、さらにプレイヤーがブラックジャックかどうかで分かれる。
+	 * プレイヤーがブラックジャックの場合は賭金の2.5倍がチップに払い戻される。
+	 * プレイヤーがブラックジャックではない場合は賭金の2倍がチップに払い戻される。
+	 */
 	private void processWinningAndLosing() {
 		int dealersHandStrength = culculateHandStrength(dealersOpenCards);
 		for(BlackJackPlayer player : players) {
-			if(!allPlayersStatus.get(player.getPlayerNumber()).get(0).contentEquals("PASS")) {
+			if(!(allPlayersStatus.get(player.getPlayerNumber()).get(0).contentEquals("PASS") || allPlayersStatus.get(player.getPlayerNumber()).get(0).contentEquals("SURRENDER"))) {
 				int numberOfPlayersHands = allPlayersHands.get(player.getPlayerNumber()).size();
 				for(int handNumber = 0; handNumber < numberOfPlayersHands ; handNumber++){
 					String currentPlayersInformation = player.getName() + "(" + player.getPlayerNumber() + ")";
@@ -669,6 +874,11 @@ public class BlackJackTable extends GameTable {
 		System.out.println();
 	}
 
+	/**
+	 * 次のゲームの確認処理。
+	 * プレイヤーそれぞれからメッセージを受け取り、ENDを受け取った場合は hasNextGame を false にする。
+	 * または1ゲームの間応答がないプレイヤーが居る場合、プレイヤーの状態は INITIALIZED のままなので、その場合も hasNextGame を false にする。
+	 */
 	private void checkNextGame() {
 		boolean allPlayersPassed = true;
 		for(BlackJackPlayer player : players) {
@@ -684,11 +894,14 @@ public class BlackJackTable extends GameTable {
 				hasNextGame = false;
 			} else {
 				String playersAction = player.getMessage();
-				if(playersAction.contentEquals("END") || playersAction.contentEquals("INITIALIZED")) {
+				if(playersAction.contentEquals("END")) {
 					hasNextGame = false;
 				}
 				if(!allPlayersStatus.get(player.getPlayerNumber()).get(0).contentEquals("PASS")) allPlayersPassed = false;
 			}
+
+			if(allPlayersStatus.get(player.getPlayerNumber()).get(0).contentEquals("INITIALIZED")) hasNextGame = false;
+
 			System.out.println();
 		}
 		if(allPlayersPassed) hasNextGame = false;
@@ -705,6 +918,11 @@ public class BlackJackTable extends GameTable {
 		}
 	}
 
+	/**
+	 * 手札の強さの点数を返す静的メソッド。
+	 * @param hand 手札
+	 * @return 強さの値
+	 */
 	public static int culculateHandStrength(ArrayList<Card> hand) {
 		int strength = 0;
 		boolean containsAce = false;
@@ -721,6 +939,11 @@ public class BlackJackTable extends GameTable {
 		return strength;
 	}
 
+	/**
+	 * スプリットできる手札かどうかを判別する静的メソッド。
+	 * @param hand 手札
+	 * @return スプリットできるなら true できないなら false
+	 */
 	public static boolean canSplit(ArrayList<Card> hand) {
 		int hand1 = hand.get(0).getNumber();
 		int hand2 = hand.get(1).getNumber();
