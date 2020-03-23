@@ -18,8 +18,8 @@ public class Card implements VisualizerOnCUI {
 
 	/**
 	 * コンストラクタ。不正な値が入ってきた場合は例外InvalidCardExceptionを投げる。
-	 * @param number
-	 * @param symbol
+	 * @param number カード番号
+	 * @param symbol カードのマーク番号
 	 */
 	public Card(int number, int symbol) throws InvalidCardException {
 		if(0 < number && number < 16) {
@@ -156,7 +156,7 @@ public class Card implements VisualizerOnCUI {
 	/**
 	 * カードの強さの値を返す。
 	 * 15のジョーカー＞14のジョーカー＞A＞13～2
-	 * @return
+	 * @return カードパワーの数値
 	 */
 	public int cardPower() {
 		int num = this.number - 1;

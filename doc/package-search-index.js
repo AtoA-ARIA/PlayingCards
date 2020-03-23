@@ -1,0 +1,1 @@
+packageSearchIndex = [{"l":"system.core"},{"l":"すべてのパッケージ","url":"allpackages-index.html"}]

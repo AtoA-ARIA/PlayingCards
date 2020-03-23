@@ -1,0 +1,1 @@
+typeSearchIndex = [{"p":"system.core","l":"Card"},{"l":"すべてのクラス","url":"allclasses-index.html"}]

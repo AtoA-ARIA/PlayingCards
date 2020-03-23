@@ -7,19 +7,39 @@ import blackJack.controller.BlackJackController;
 import system.core.Card;
 import system.front.ScannerForMultiThreadOnCUI;
 
+/**
+ * 人間のCUI入力でのコントローラークラス。
+ * @author Takashi Sakakihara
+ *
+ */
 public class HumanControllerCUI extends BlackJackController {
 
+	/**
+	 * CUIの入力のオブジェクト。
+	 */
 	private final ScannerForMultiThreadOnCUI scanCUI;
 
+	/**
+	 * コンストラクタ。
+	 * @param scanCUI スキャナー。
+	 * @param playerNumber プレイヤー番号。
+	 */
 	public HumanControllerCUI(ScannerForMultiThreadOnCUI scanCUI, int playerNumber) {
 		super(playerNumber);
 		this.scanCUI = scanCUI;
 	}
 
+	/**
+	 * 人間がメッセージを求められたときに操作するのでrun()は空で良い。
+	 */
 	public void run() {
 
 	}
 
+	/**
+	 * メッセージの取得。
+	 * ゲームの進行度に応じて何を入力するのかを表示する。
+	 */
 	@Override
 	public String getMessage() {
 		String ret = "";
@@ -55,6 +75,10 @@ public class HumanControllerCUI extends BlackJackController {
 		return ret;
 	}
 
+	/**
+	 * メッセージの取得。
+	 * 可能なアクションを表示する。
+	 */
 	@Override
 	public String getMessageSplited(int handNumber) {
 		System.out.println("現在のゲーム状況を表示したい場合は \"INFO\" と入力してください");
