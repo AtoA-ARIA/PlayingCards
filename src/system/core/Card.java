@@ -20,6 +20,7 @@ public class Card implements VisualizerOnCUI {
 	 * コンストラクタ。不正な値が入ってきた場合は例外InvalidCardExceptionを投げる。
 	 * @param number カード番号
 	 * @param symbol カードのマーク番号
+	 * @throws InvalidCardException 存在し得ないカードである例外
 	 */
 	public Card(int number, int symbol) throws InvalidCardException {
 		if(0 < number && number < 16) {

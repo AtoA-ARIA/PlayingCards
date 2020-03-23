@@ -109,7 +109,7 @@ public class BlackJackTable extends GameTable {
 
 	/**
 	 * コンストラクタ。マルチスレッド用スキャナーを受け取る。
-	 * @param scanCUI
+	 * @param scanCUI スキャナー
 	 */
 	public BlackJackTable(ScannerForMultiThreadOnCUI scanCUI) {
 		super(scanCUI);

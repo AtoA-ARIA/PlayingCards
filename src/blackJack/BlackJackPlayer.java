@@ -70,7 +70,7 @@ public class BlackJackPlayer implements VisualizerOnCUI {
 
 	/**
 	 * 公開情報の更新。
-	 * @param commonInformation
+	 * @param commonInformation 公開情報
 	 */
 	public void setInformation(CommonInformation commonInformation) {
 		this.commonInformation = commonInformation;

@@ -33,7 +33,7 @@ public abstract class GameTable extends Thread implements VisualizerOnCUI {
 	/**
 	 * CUIでゲームをするときのコンストラクタ。
 	 * 外からScannerを共有しておく。
-	 * @param scan 標準入力のスキャナ。
+	 * @param scanCUI 標準入力のスキャナ。
 	 */
 	public GameTable(ScannerForMultiThreadOnCUI scanCUI) {
 		this.scanCUI = scanCUI;
@@ -49,7 +49,7 @@ public abstract class GameTable extends Thread implements VisualizerOnCUI {
 	public abstract void saveGame();
 	/**
 	 * ゲームのデータをロードする。
-	 * @param scan
+	 * @param fileName ファイル名
 	 */
 	public abstract void loadGame(String fileName);
 

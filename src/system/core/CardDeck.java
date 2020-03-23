@@ -61,7 +61,7 @@ public class CardDeck implements VisualizerOnCUI {
 	 * 山札にジョーカーを numberOfJokers 枚追加する。
 	 * ジョーカーは強いものと弱いものをそれぞれ15と14に交互に割り当てる。
 	 * 初期化直後のカードが減っていないときにのみ動作する。
-	 * @param numberOfJokers
+	 * @param numberOfJokers 山札に入れるジョーカーの枚数
 	 */
 	public void addJokers(int numberOfJokers) {
 		if(numberOfJokers < 1) {

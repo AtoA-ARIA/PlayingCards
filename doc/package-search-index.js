@@ -1,1 +1,1 @@
-packageSearchIndex = [{"l":"system.core"},{"l":"すべてのパッケージ","url":"allpackages-index.html"}]
+packageSearchIndex = [{"l":"blackJack"},{"l":"blackJack.controller"},{"l":"blackJack.controller.ai"},{"l":"blackJack.controller.human"},{"l":"system.core"},{"l":"system.front"},{"l":"すべてのパッケージ","url":"allpackages-index.html"}]

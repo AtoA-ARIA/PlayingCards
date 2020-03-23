@@ -37,8 +37,8 @@ public class ScannerForMultiThreadOnCUI {
 	}
 	/**
 	 * synchronized な Scanner の nextInt()
-	 * @return
-	 * @throws InputMismatchException
+	 * @return 入力された整数
+	 * @throws InputMismatchException 入力の形式が正しくないときの例外
 	 */
 	public synchronized int nextInt() throws InputMismatchException {
 		return scan.nextInt();

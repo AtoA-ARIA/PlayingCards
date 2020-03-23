@@ -84,6 +84,7 @@ public abstract class BlackJackController extends Thread {
 	/**
 	 * 複数手札があり得る場合のメッセージ取得を行う抽象メソッド。
 	 * stageに応じてBlackJackTableで処理できるメッセージを返す。
+	 * @param handNumber 手札の番号
 	 * @return メッセージ。
 	 */
 	public abstract String getMessageSplited(int handNumber);

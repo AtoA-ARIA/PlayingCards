@@ -60,17 +60,17 @@ public final class CommonInformation implements VisualizerOnCUI {
 
 	/**
 	 * コンストラクタ。
-	 * @param numberOfPlayers
-	 * @param gameNumber
-	 * @param minimumBet
-	 * @param gameDeck
-	 * @param playerNames
-	 * @param allPlayersChips
-	 * @param allPlayersHands
-	 * @param allPlayersBets
-	 * @param allPlayersInsurance
-	 * @param allPlayersStatus
-	 * @param dealersOpenCards
+	 * @param numberOfPlayers プレイヤー数
+	 * @param gameNumber ゲーム番号
+	 * @param minimumBet 最小賭金
+	 * @param gameDeck ゲームの山札
+	 * @param playerNames 全プレイヤーの名前
+	 * @param allPlayersChips 全プレイヤーのチップ
+	 * @param allPlayersHands 全プレイヤーの全手札
+	 * @param allPlayersBets 全プレイヤーの賭金
+	 * @param allPlayersInsurance 全プレイヤーのインシュランス
+	 * @param allPlayersStatus 全プレイヤーのステータス
+	 * @param dealersOpenCards ディーラーの公開カード
 	 */
 	public CommonInformation(int numberOfPlayers,
 			int gameNumber,
