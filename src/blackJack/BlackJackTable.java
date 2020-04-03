@@ -589,12 +589,8 @@ public class BlackJackTable extends GameTable {
 							isCorrectInput = processPlayersSplit(player, handNumber);
 							break;
 						case "SURRENDER":
-							if(handNumber == 0 && playersHand.size() == 2) {
-								processPlayersSurrender(player, handNumber);
-							} else {
-								System.out.println("最初にしかサレンダーはできません！");
-								isCorrectInput = false;
-							}
+							isCorrectInput = processPlayersSurrender(player, handNumber);
+							break;
 						default:
 							isCorrectInput = false;
 							break;
