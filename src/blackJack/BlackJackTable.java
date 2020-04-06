@@ -108,6 +108,11 @@ public class BlackJackTable extends GameTable {
 	public static final int numberOfTimesToAcceptWrongMessage = 5;
 
 	/**
+	 * 最大ゲーム数。
+	 * この回数ゲームが行われると強制的に終了する。
+	 */
+	public static final int maxGameNumber = Integer.MAX_VALUE;
+	/**
 	 * コンストラクタ。マルチスレッド用スキャナーを受け取る。
 	 * @param scanCUI スキャナー
 	 */
@@ -911,6 +916,7 @@ public class BlackJackTable extends GameTable {
 			System.out.println();
 		}
 		if(allPlayersPassed) hasNextGame = false;
+		if(this.gameNumber >= maxGameNumber) hasNextGame = false;
 
 		if(hasNextGame) {
 			System.out.println("次のゲームが開始できます。");

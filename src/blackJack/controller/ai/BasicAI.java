@@ -23,6 +23,9 @@ public class BasicAI extends BlackJackController {
 	 */
 	private int lastProcessedStage;
 
+	/**
+	 * 次の思考までの待ち時間。
+	 */
 	private final int waitingTime = 50;
 
 	/**
