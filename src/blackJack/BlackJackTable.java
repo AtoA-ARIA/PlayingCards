@@ -573,7 +573,6 @@ public class BlackJackTable extends GameTable {
 				int handNumber = 0;
 				while(handNumber < allPlayersHands.get(player.getPlayerNumber()).size()) {
 					ArrayList<Card> playersHand = allPlayersHands.get(player.getPlayerNumber()).get(handNumber);
-					System.out.println("playersHand.size() = " + playersHand.size());
 					for(int i = 0; i < numberOfTimesToAcceptWrongMessage; i++) {
 						if(i > 0) {
 							System.out.println("もう一度アクションを確認します。");
