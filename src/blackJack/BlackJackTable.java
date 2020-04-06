@@ -111,7 +111,7 @@ public class BlackJackTable extends GameTable {
 	 * 最大ゲーム数。
 	 * この回数ゲームが行われると強制的に終了する。
 	 */
-	public static final int maxGameNumber = Integer.MAX_VALUE;
+	private int maxGameNumber = Integer.MAX_VALUE;
 	/**
 	 * コンストラクタ。マルチスレッド用スキャナーを受け取る。
 	 * @param scanCUI スキャナー
@@ -176,6 +176,8 @@ public class BlackJackTable extends GameTable {
 		this.initialPlayerChips = scanCUI.scanInt("初期チップ", 100, 10000);
 		System.out.println("このテーブルの最低賭金を1～100で入力してください。");
 		this.minimumBet = scanCUI.scanInt("最低賭金", 1, 100);
+		System.out.println("何回までゲームを行うかを" + 1 + "～" + Integer.MAX_VALUE + "で入力してください。");
+		this.maxGameNumber = scanCUI.scanInt("最大ゲーム数", 1, Integer.MAX_VALUE);
 	}
 
 	/**
