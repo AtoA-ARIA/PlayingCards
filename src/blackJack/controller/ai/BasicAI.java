@@ -44,9 +44,7 @@ public class BasicAI extends BlackJackController {
 			// ゲーム進行度による場合分け。
 			switch(stage) {
 			case 1: // 賭金のメッセージの設定。常時最低賭金。
-				Integer bet = info.minimumBet;
-				message.set(0, bet.toString());
-				lastProcessedStage = 1;
+				bet();
 				break;
 			case 2: // とくになにもしない。待つ。
 				if(lastProcessedStage == stage) {
@@ -70,9 +68,7 @@ public class BasicAI extends BlackJackController {
 						e.printStackTrace();
 					}
 				} else {
-					int insurance = info.getAllPlayersBetsCopy().get(playerNumber) / 2;
-					message.set(0, Integer.toString(insurance));
-					lastProcessedStage = 3;
+					insure();
 				}
 				break;
 			case 4: // とくになにもしない。待つ。
@@ -98,11 +94,7 @@ public class BasicAI extends BlackJackController {
 						e.printStackTrace();
 					}
 				} else {
-					if(BlackJackTable.culculateHandStrength(info.getAllPlayersHandsCopy().get(playerNumber).get(0)) > 16) {
-						message.set(0, "STAND");
-					} else {
-						message.set(0, "HIT");
-					}
+					takePlayerAction();
 				}
 
 				break;
@@ -129,8 +121,7 @@ public class BasicAI extends BlackJackController {
 						e.printStackTrace();
 					}
 				} else {
-					message.set(0, "CONTINUE");
-					lastProcessedStage = 8;
+					chooseToContinue();
 				}
 				break;
 			default:
@@ -143,6 +134,44 @@ public class BasicAI extends BlackJackController {
 			}
 		}
 	}
+
+	/**
+	 * 賭金を決める。
+	 */
+	private void bet() {
+		Integer bet = info.minimumBet;
+		message.set(0, bet.toString());
+		lastProcessedStage = 1;
+	}
+
+	/**
+	 * インシュランスを決める。
+	 */
+	private void insure() {
+		int insurance = info.getAllPlayersBetsCopy().get(playerNumber) / 2;
+		message.set(0, Integer.toString(insurance));
+		lastProcessedStage = 3;
+	}
+
+	/**
+	 * プレイヤーのアクションを決める。
+	 */
+	private void takePlayerAction() {
+		if(BlackJackTable.culculateHandStrength(info.getAllPlayersHandsCopy().get(playerNumber).get(0)) > 16) {
+			message.set(0, "STAND");
+		} else {
+			message.set(0, "HIT");
+		}
+	}
+
+	/**
+	 * 次のゲームをするかどうかを決める。
+	 */
+	private void chooseToContinue() {
+		message.set(0, "CONTINUE");
+		lastProcessedStage = 8;
+	}
+
 
 	/**
 	 * ゲームの開始の準備処理。
@@ -159,12 +188,16 @@ public class BasicAI extends BlackJackController {
 
 	@Override
 	public String getMessage() {
-		return message.get(0);
+		String ret = message.get(0);
+		message.set(0, "WAIT");
+		return ret;
 	}
 
 	@Override
 	public String getMessageSplited(int handNumber) {
-		return message.get(handNumber);
+		String ret = message.get(handNumber);
+		message.set(handNumber, "WAIT");
+		return ret;
 	}
 
 }

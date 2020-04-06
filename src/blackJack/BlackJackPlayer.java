@@ -55,6 +55,8 @@ public class BlackJackPlayer implements VisualizerOnCUI {
 		case "BasicAIPlayer":
 			this.controller = new BasicAI(playerNumber);
 			break;
+
+			// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 		/*
 		 * ここにこのように記述して追加する。
 		 *
@@ -62,6 +64,7 @@ public class BlackJackPlayer implements VisualizerOnCUI {
 		 * 		this.controller = new 新しいAIのコンストラクタ();
 		 * 		break;
 		 */
+			// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 		default:
 			break;
 		}

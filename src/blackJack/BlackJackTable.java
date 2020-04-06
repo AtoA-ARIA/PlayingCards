@@ -77,9 +77,9 @@ public class BlackJackTable extends GameTable {
 	private Card dealersHiddenCard;
 	/**
 	 * 全プレイヤーの全手札。
-	 * ArrayList<Card> は手札1つを表す。ディーラーの手と勝負する単位。
-	 * ArrayList<ArrayList<Card>> はあるプレイヤーの持つそれぞれの手札を表す。スプリットをしたときのみ2つ以上の要素を持つ。
-	 * ArrayList<ArrayList<ArrayList<Card>>> はつまりすべてのプレイヤーそれぞれの、全ての手札となる。
+	 * 一番内側の ArrayList は手札1つを表す。ディーラーの手と勝負する単位。
+	 * 手札1つの ArrayList はあるプレイヤーの持つそれぞれの手札を表す。スプリットをしたときのみ2つ以上の要素を持つ。
+	 * つまりこれはすべてのプレイヤーそれぞれの、全ての手札となる。
 	 */
 	private ArrayList<ArrayList<ArrayList<Card>>> allPlayersHands;
 	/**
@@ -200,6 +200,9 @@ public class BlackJackTable extends GameTable {
 		while(playerName != null && playerName.contentEquals("")) {
 			playerName = scanCUI.scanString("プレイヤー" + playerNumber + "の名前");
 		}
+		// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+		// 新しいAIなどのコントローラーを追加した場合、ここから下を変更してください。
+		// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 		System.out.println("このプレイヤーの種類を入力してください。\n"
 				+ "0 : 人間、1 : AI");
 		int playerTypeInt = scanCUI.scanInt("プレイヤーの種類", 0, 1);
@@ -211,6 +214,12 @@ public class BlackJackTable extends GameTable {
 		case 1:
 			playerType = "BasicAIPlayer";
 			break;
+
+			// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+			// 新しいAI追加時、ここに上記のような記述を追加する。
+			// playerTypeにはBlackJackPlayerの方で設定した文字列を入れる。
+			// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
 		default:
 			break;
 		}
@@ -227,9 +236,9 @@ public class BlackJackTable extends GameTable {
 		gameNumber++;
 		stage = 0;
 		dealersOpenCards.clear();
-		for(ArrayList<ArrayList<Card>> playersHand : allPlayersHands) {
-			playersHand.clear();
-			playersHand.add(new ArrayList<Card>());
+		for(ArrayList<ArrayList<Card>> playersHands : allPlayersHands) {
+			playersHands.clear();
+			playersHands.add(new ArrayList<Card>());
 		}
 		if(gameDeck.getRemainingRate() < 0.4) {
 			gameDeck = new CardDeck(numberOfDecks);
@@ -564,6 +573,7 @@ public class BlackJackTable extends GameTable {
 				int handNumber = 0;
 				while(handNumber < allPlayersHands.get(player.getPlayerNumber()).size()) {
 					ArrayList<Card> playersHand = allPlayersHands.get(player.getPlayerNumber()).get(handNumber);
+					System.out.println("playersHand.size() = " + playersHand.size());
 					for(int i = 0; i < numberOfTimesToAcceptWrongMessage; i++) {
 						if(i > 0) {
 							System.out.println("もう一度アクションを確認します。");
@@ -628,7 +638,7 @@ public class BlackJackTable extends GameTable {
 	 * エースのスプリットをしたあとのヒットをした場合のみ playerStatus は STAND になる。
 	 * @param player 処理を行うプレイヤー
 	 * @param handNumber 手札の番号
-	 * @return
+	 * @return 正常に動作が行える入力だったかどうか
 	 */
 	private boolean processPlayersHit(BlackJackPlayer player, int handNumber) {
 		String currentPlayersInformation = player.getName() + "(" + player.getPlayerNumber() + ")";
@@ -661,7 +671,7 @@ public class BlackJackTable extends GameTable {
 	 * 正常に行われた場合、playerStatus が STAND になる。
 	 * @param player 処理を行うプレイヤー
 	 * @param handNumber 手札の番号
-	 * @return
+	 * @return 正常に動作が行える入力だったかどうか
 	 */
 	private boolean processPlayersStand(BlackJackPlayer player, int handNumber) {
 		String currentPlayersInformation = player.getName() + "(" + player.getPlayerNumber() + ")";
@@ -680,11 +690,11 @@ public class BlackJackTable extends GameTable {
 	 * さらに、バーストした場合は playerStatus が BURST になり、そうでない場合は STAND になる。
 	 * @param player 処理を行うプレイヤー
 	 * @param handNumber 手札の番号
-	 * @return
+	 * @return 正常に動作が行える入力だったかどうか
 	 */
 	private boolean processPlayersDoubleDown(BlackJackPlayer player, int handNumber) {
 		String currentPlayersInformation = player.getName() + "(" + player.getPlayerNumber() + ")";
-		if(handNumber == 0 && allPlayersHands.get(player.getPlayerNumber()).size() == 2) {
+		if(handNumber == 0 && allPlayersHands.get(player.getPlayerNumber()).get(0).size() == 2) {
 			int bet = allPlayersBets.get(player.getPlayerNumber()) * 2;
 			int chip = allPlayersChips.get(player.getPlayerNumber()) - (bet / 2);
 			if(chip >= 0) {
@@ -721,7 +731,7 @@ public class BlackJackTable extends GameTable {
 	 * その後、playerStatus を SPLIT にする。
 	 * @param player 処理を行うプレイヤー
 	 * @param handNumber 手札の番号
-	 * @return
+	 * @return 正常に動作が行える入力だったかどうか
 	 */
 	private boolean processPlayersSplit(BlackJackPlayer player, int handNumber) {
 		String currentPlayersInformation = player.getName() + "(" + player.getPlayerNumber() + ")";
@@ -759,6 +769,7 @@ public class BlackJackTable extends GameTable {
 	 * 賭金の半分をプレイヤーのチップに返却し、playerStatus を SURRENDER にする。
 	 * @param player 処理を行うプレイヤー
 	 * @param handNumber 手札の番号
+	 * @return 正常に動作が行える入力だったかどうか
 	 */
 	private boolean processPlayersSurrender(BlackJackPlayer player, int handNumber) {
 		String currentPlayersInformation = player.getName() + "(" + player.getPlayerNumber() + ")";
