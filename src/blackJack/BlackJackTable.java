@@ -100,7 +100,7 @@ public class BlackJackTable extends GameTable {
 	 * 行動決定の待ち時間。（ミリ秒）
 	 * プレイヤーから間違ったメッセージを受け取ったときなどに次のメッセージ受け取りまでシステムが待つ時間。
 	 */
-	public static final int waitingTime = 1000;
+	public static final int waitingTime = 100;
 	/**
 	 * 間違ったメッセージを受け付ける回数。
 	 * この回数間違ったメッセージをプレイヤーから受け取ると、そのプレイヤーは強制的にパスになる。
@@ -419,7 +419,7 @@ public class BlackJackTable extends GameTable {
 					System.out.println("賭金が読み取れませんでした。");
 					bet = -1;
 					try {
-						Thread.sleep(1000);
+						Thread.sleep(waitingTime);
 					} catch (InterruptedException e1) {}
 				}
 				if(bet < 0) {
@@ -442,7 +442,7 @@ public class BlackJackTable extends GameTable {
 					break;
 				}
 				try {
-					Thread.sleep(300);
+					Thread.sleep(waitingTime);
 				} catch (InterruptedException e) {
 					// TODO 自動生成された catch ブロック
 					e.printStackTrace();
@@ -498,7 +498,7 @@ public class BlackJackTable extends GameTable {
 						System.out.println("インシュランスが読み取れませんでした。");
 						insurance = -1;
 						try {
-							Thread.sleep(1000);
+							Thread.sleep(waitingTime);
 						} catch (InterruptedException e1) {}
 					}
 					if(insurance < 0) {
@@ -520,7 +520,7 @@ public class BlackJackTable extends GameTable {
 						break;
 					}
 					try {
-						Thread.sleep(300);
+						Thread.sleep(waitingTime);
 					} catch (InterruptedException e) {
 						// TODO 自動生成された catch ブロック
 						e.printStackTrace();
@@ -606,14 +606,14 @@ public class BlackJackTable extends GameTable {
 						}
 						if(isCorrectInput) break;
 						try {
-							Thread.sleep(300);
+							Thread.sleep(waitingTime);
 						} catch (InterruptedException e) {
 							// TODO 自動生成された catch ブロック
 							e.printStackTrace();
 						}
 					}
 					try {
-						Thread.sleep(300);
+						Thread.sleep(waitingTime);
 					} catch (InterruptedException e) {
 						// TODO 自動生成された catch ブロック
 						e.printStackTrace();
@@ -889,7 +889,7 @@ public class BlackJackTable extends GameTable {
 		boolean allPlayersPassed = true;
 		for(BlackJackPlayer player : players) {
 			try {
-				Thread.sleep(300);
+				Thread.sleep(waitingTime);
 			} catch (InterruptedException e) {
 				// TODO 自動生成された catch ブロック
 				e.printStackTrace();

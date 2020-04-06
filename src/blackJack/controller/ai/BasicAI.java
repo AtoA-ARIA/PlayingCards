@@ -23,6 +23,8 @@ public class BasicAI extends BlackJackController {
 	 */
 	private int lastProcessedStage;
 
+	private final int waitingTime = 50;
+
 	/**
 	 * コンストラクタ。
 	 * @param playerNumber プレイヤー番号。
@@ -49,7 +51,7 @@ public class BasicAI extends BlackJackController {
 			case 2: // とくになにもしない。待つ。
 				if(lastProcessedStage == stage) {
 					try {
-						Thread.sleep(250);
+						Thread.sleep(waitingTime);
 					} catch (InterruptedException e) {
 						// TODO 自動生成された catch ブロック
 						e.printStackTrace();
@@ -62,7 +64,7 @@ public class BasicAI extends BlackJackController {
 			case 3: // インシュランスのメッセージの設定。常に賭金の半分のインシュランス。
 				if(lastProcessedStage == stage) {
 					try {
-						Thread.sleep(250);
+						Thread.sleep(waitingTime);
 					} catch (InterruptedException e) {
 						// TODO 自動生成された catch ブロック
 						e.printStackTrace();
@@ -74,7 +76,7 @@ public class BasicAI extends BlackJackController {
 			case 4: // とくになにもしない。待つ。
 				if(lastProcessedStage == stage) {
 					try {
-						Thread.sleep(250);
+						Thread.sleep(waitingTime);
 					} catch (InterruptedException e) {
 						// TODO 自動生成された catch ブロック
 						e.printStackTrace();
@@ -88,7 +90,7 @@ public class BasicAI extends BlackJackController {
 			case 5: // プレイヤーの行動処理。ディーラーと同じく16を超えるまでヒットし、超えたらスタンドするだけ。
 				if(lastProcessedStage == stage) {
 					try {
-						Thread.sleep(250);
+						Thread.sleep(waitingTime);
 					} catch (InterruptedException e) {
 						// TODO 自動生成された catch ブロック
 						e.printStackTrace();
@@ -102,7 +104,7 @@ public class BasicAI extends BlackJackController {
 			case 7:
 				if(lastProcessedStage == stage) {
 					try {
-						Thread.sleep(250);
+						Thread.sleep(waitingTime);
 					} catch (InterruptedException e) {
 						// TODO 自動生成された catch ブロック
 						e.printStackTrace();
@@ -115,7 +117,7 @@ public class BasicAI extends BlackJackController {
 			case 8: // 次のゲームの参加意思表示のメッセージの設定。常に続行。
 				if(lastProcessedStage == stage) {
 					try {
-						Thread.sleep(250);
+						Thread.sleep(waitingTime);
 					} catch (InterruptedException e) {
 						// TODO 自動生成された catch ブロック
 						e.printStackTrace();
@@ -127,7 +129,7 @@ public class BasicAI extends BlackJackController {
 			default:
 			}
 			try {
-				Thread.sleep(250);
+				Thread.sleep(waitingTime);
 			} catch (InterruptedException e) {
 				// TODO 自動生成された catch ブロック
 				e.printStackTrace();
