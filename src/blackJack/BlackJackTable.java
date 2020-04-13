@@ -211,8 +211,8 @@ public class BlackJackTable extends GameTable {
 		// 新しいAIなどのコントローラーを追加した場合、ここから下を変更してください。
 		// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 		System.out.println("このプレイヤーの種類を入力してください。\n"
-				+ "0 : 人間、1 : AI");
-		int playerTypeInt = scanCUI.scanInt("プレイヤーの種類", 0, 1);
+				+ "0 : 人間、1 : AI、2 : IRAI");
+		int playerTypeInt = scanCUI.scanInt("プレイヤーの種類", 0, 2);
 		String playerType = "";
 		switch(playerTypeInt) {
 		case 0:
@@ -221,7 +221,9 @@ public class BlackJackTable extends GameTable {
 		case 1:
 			playerType = "BasicAIPlayer";
 			break;
-
+		case 2:
+			playerType = "IrAi";
+			break;
 			// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 			// 新しいAI追加時、ここに上記のような記述を追加する。
 			// playerTypeにはBlackJackPlayerの方で設定した文字列を入れる。
