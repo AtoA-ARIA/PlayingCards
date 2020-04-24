@@ -122,6 +122,7 @@ public class IrAi extends BlackJackController {
 						message.set(0, "SURRENDER");
 					} else if(!hitCount && !containsAce && playersHandsStrength == 16 && dealersOpenCard == 1) {
 						message.set(0, "SURRENDER");
+					//splitはあきらめる
 //					} else if(BlackJackTable.canSplit(info.getAllPlayersHandsCopy().get(playerNumber).get(0)) && containsAce) {
 //						message.set(0, "SPLIT");
 //					} else if(BlackJackTable.canSplit(info.getAllPlayersHandsCopy().get(playerNumber).get(0)) && info.getAllPlayersHandsCopy().get(playerNumber).get(0).get(0).getNumber() == 8) {
