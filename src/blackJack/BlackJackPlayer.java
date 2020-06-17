@@ -2,6 +2,7 @@ package blackJack;
 
 import blackJack.controller.BlackJackController;
 import blackJack.controller.ai.BasicAI;
+import blackJack.controller.ai.IrAi;
 import blackJack.controller.human.HumanControllerCUI;
 import system.core.VisualizerOnCUI;
 import system.front.ScannerForMultiThreadOnCUI;
@@ -55,7 +56,9 @@ public class BlackJackPlayer implements VisualizerOnCUI {
 		case "BasicAIPlayer":
 			this.controller = new BasicAI(playerNumber);
 			break;
-
+		case "IrAi":
+			this.controller = new IrAi(playerNumber);
+			break;
 			// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 		/*
 		 * ここにこのように記述して追加する。
