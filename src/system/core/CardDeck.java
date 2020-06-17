@@ -97,6 +97,14 @@ public class CardDeck implements VisualizerOnCUI {
 		return drawCards;
 	}
 
+	/**
+	 * デッキをシャッフルする。
+	 */
+	public void shuffle() {
+		System.out.println("シャッフルしました。");
+		Collections.shuffle(cards);
+	}
+
 	public Card drawCard() {
 		return cards.remove(0);
 	}
