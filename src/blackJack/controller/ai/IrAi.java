@@ -95,55 +95,8 @@ public class IrAi extends BlackJackController {
 						e.printStackTrace();
 					}
 				} else {
-					//ディーラーのオープンカード
-					int dealersOpenCard = BlackJackTable.culculateHandStrength(info.getDealersOpenCardsCopy());
-					//自身の手札を保持。
-					ArrayList<ArrayList<Card>> myHand = info.getAllPlayersHandsCopy().get(playerNumber);
-					//手札に　A　があるかどうか判別。あればtrue。無ければfalse。
-					boolean containsAce = false;
-					//自身の手札の中に　A があればcontainsAceをtrueにする。
-					for(int i = 0 ; i < myHand.get(0).size() ; i++) {
-						if(myHand.get(0).get(i).getNumber() == 1) {
-							containsAce = true;
-						}
-					}
-					//手札の強さを保持。
-					int playersHandsStrength = BlackJackTable.culculateHandStrength(myHand.get(0));
-					//ヒットしたかどうかを判別。ヒットすればtrue。してなければfalse。
-					boolean hitCount = false;
-					//ヒットしていれば、hitCountをtrueにする。
-					if(myHand.get(0).size() != 2)hitCount = true;
-					//サレンダー、ダブルダウン、スプリットなどの処理。
-					if(!hitCount && !containsAce && playersHandsStrength == 15 && dealersOpenCard == 10) {
-						message.set(0, "SURRENDER");
-					} else if(!hitCount && !containsAce && playersHandsStrength == 16 && dealersOpenCard == 9) {
-						message.set(0, "SURRENDER");
-					} else if(!hitCount && !containsAce && playersHandsStrength == 16 && dealersOpenCard == 10) {
-						message.set(0, "SURRENDER");
-					} else if(!hitCount && !containsAce && playersHandsStrength == 16 && dealersOpenCard == 1) {
-						message.set(0, "SURRENDER");
-					//splitはあきらめる
-//					} else if(BlackJackTable.canSplit(info.getAllPlayersHandsCopy().get(playerNumber).get(0)) && containsAce) {
-//						message.set(0, "SPLIT");
-//					} else if(BlackJackTable.canSplit(info.getAllPlayersHandsCopy().get(playerNumber).get(0)) && info.getAllPlayersHandsCopy().get(playerNumber).get(0).get(0).getNumber() == 8) {
-//						message.set(0, "SPLIT");
-					} else if(!hitCount && playersHandsStrength == 9 && 2 < dealersOpenCard && dealersOpenCard < 7) {
-						message.set(0, "DOUBLEDOWN");
-					} else if(!hitCount && playersHandsStrength == 10 && 1 < dealersOpenCard && dealersOpenCard < 10) {
-						message.set(0, "DOUBLEDOWN");
-					} else if(!hitCount && playersHandsStrength == 11 && 1 < dealersOpenCard && dealersOpenCard < 11) {
-						message.set(0, "DOUBLEDOWN");
-					} else if(!hitCount && containsAce && 12 < playersHandsStrength && playersHandsStrength < 19 && 3 < dealersOpenCard && dealersOpenCard < 7) {
-						message.set(0, "DOUBLEDOWN");
-					} else if(playersHandsStrength > 11 && dealersOpenCard < 7) {
-						message.set(0, "STAND");
-					} else if(playersHandsStrength > 16) {
-						message.set(0, "STAND");
-					} else{
-						message.set(0, "HIT");
-					}
+					playHand();
 				}
-
 				break;
 			case 6: // 6,7もなにもしない。待つ。
 			case 7:
@@ -181,6 +134,109 @@ public class IrAi extends BlackJackController {
 				e.printStackTrace();
 			}
 		}
+	}
+
+	private void playHand() {
+		//ディーラーのオープンカード
+		int dealersOpenCard = BlackJackTable.culculateHandStrength(info.getDealersOpenCardsCopy());
+		//自身の手札を保持。
+		ArrayList<ArrayList<Card>> myHand = info.getAllPlayersHandsCopy().get(playerNumber);
+		//スプリットしたかどうかを判別。スプリットしていればtrue。してなければfalse。
+		boolean checkSplit = false;
+		//スプリットしていれば、checkSplitをtrueにする。
+		if(myHand.size() == 2) checkSplit = true;
+
+		//サレンダー、ダブルダウン、スプリットなどの処理。
+		for(int i = 0 ; i < myHand.size() ; i++) {
+			//手札に　A　があるかどうか判別。あればtrue。無ければfalse。
+			boolean containsAce = false;
+			//ヒットしたかどうかを判別。ヒットすればtrue。してなければfalse。
+			boolean hitCount = false;
+			//カードの数字を保持。
+			int myCardNum = myHand.get(i).get(0).getNumber();
+			//手札の強さを保持。
+			int playersHandsStrength = BlackJackTable.culculateHandStrength(myHand.get(i));
+			//ヒットしていれば、hitCountをtrueにする。
+			if(myHand.get(i).size() != 2)hitCount = true;
+			//自身の手札の中に　A があればcontainsAceをtrueにする。
+			for(int j = 0 ; j < myHand.get(i).size() ; j++) {
+				if(myHand.get(i).get(j).getNumber() == 1) {
+					containsAce = true;
+				}
+			}
+			// サレンダー、ダブルダウン、スプリットができない場合
+			if(hitCount || checkSplit) {
+				if(playersHandsStrength > 11 && dealersOpenCard < 7) {
+					message.set(i, "STAND");
+				} else if(playersHandsStrength > 16) {
+					message.set(i, "STAND");
+				} else{
+					message.set(i, "HIT");
+				}
+			}else {
+				//サレンダー、ダブルダウン、スプリットの処理
+
+				//サレンダー、ダブルダウン、スプリットしたかどうかの情報を保持
+				//いずれかをプレイすればfalseにする
+				boolean playCount = true;
+				//エースがあるときの処理
+				if(containsAce) {
+					//エースがある場合のスプリットの処理
+					if(BlackJackTable.canSplit(myHand.get(i))) {
+						message.set(i, "SPLIT");
+						if(myHand.size() < 2)
+							message.add("wait");
+						playCount = false;
+					}
+					//エースがある場合のダブルダウンの処理
+					if(playersHandsStrength > 12 && playersHandsStrength < 19
+						&& dealersOpenCard > 3 && dealersOpenCard < 7) {
+						message.set(i, "DOUBLEDOWN");
+						playCount = false;
+					}
+				} else {
+					//エースがない場合のサレンダーの処理
+					if(
+						(playersHandsStrength == 15 && dealersOpenCard == 10)
+						|| (playersHandsStrength == 16 && dealersOpenCard == 9)
+						|| (playersHandsStrength == 16 && dealersOpenCard == 10)
+						|| (playersHandsStrength == 16 && dealersOpenCard == 1)
+						) {
+						message.set(i, "SURRENDER");
+						playCount = false;
+					}
+					//エースがない場合のスプリットの処理
+					if(BlackJackTable.canSplit(myHand.get(i))) {
+						if((myCardNum < 10)||(myCardNum != 6)||(myCardNum != 5)||(myCardNum != 4)){
+							message.set(i, "SPLIT");
+							if(myHand.size() < 2)
+								message.add("wait");
+							playCount = false;
+						}
+					}
+					//エースがない場合のダブルダウンの処理
+					if(
+						(playersHandsStrength == 9 && 2 < dealersOpenCard && dealersOpenCard < 7)
+						||(playersHandsStrength == 10 && 1 < dealersOpenCard && dealersOpenCard < 10)
+						||(playersHandsStrength == 11 && 1 < dealersOpenCard && dealersOpenCard < 11)
+						) {
+						message.set(i, "DOUBLEDOWN");
+						playCount = false;
+					}
+				}
+				//上記のどれもプレイできない場合の処理
+				if(playCount) {
+					if(playersHandsStrength > 11 && dealersOpenCard < 7) {
+						message.set(i, "STAND");
+					} else if(playersHandsStrength > 16) {
+						message.set(i, "STAND");
+					} else{
+						message.set(i, "HIT");
+					}
+				}
+			}
+		}
+
 	}
 
 	/**
